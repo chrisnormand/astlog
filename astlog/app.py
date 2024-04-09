@@ -368,7 +368,7 @@ class LineCollection(object):
                 found=[False]):
         if level >= max_depth:
             return markup
-        if isinstance(markup, basestring):
+        if isinstance(markup, str):
             text = markup
             start, end = finder(text)
             if end:
@@ -569,7 +569,7 @@ class LogLineWalker(ListWalker):
         elif pos < len(self.lines):
             # we have that line so return it
             obj, tag = self.lines[pos]
-            if isinstance(obj, (basestring, tuple, list)):
+            if isinstance(obj, (str, tuple, list)):
                 log_text = LogText(obj or '', wrap=urwid.CLIP)
                 log_text.my_tag = tag
                 connect_signal(log_text, 'jump', self.on_jump)
