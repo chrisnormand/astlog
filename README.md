@@ -1,3 +1,7 @@
+Fork of https://github.com/slsolucije/astlog
+
+Trying to adapt it for Asterisk 20
+
 Install
 -------
 
