@@ -843,12 +843,13 @@ class LogParser(object):
                 self.link_chan(line_no, line, chan, acall, when)
             return
 
-        # -- Executing
-        idx = line.find(b'-- Executing', pos)
+        # Executing
+        idx = line.find(b'pbx.c: Executing ', pos)
         if idx > 0:
-            # Executing [016445520@ctx1:2]
-            # .. Dial("SIP/tk-0015b", "SIP/441&SIP/tk/123,14")
-            extension, idx = delimited(line, b'[', b'@', idx + 12)
+            # [Apr  9 14:06:49] VERBOSE[1590451][C-00000001] pbx.c:
+            #  .. Executing [59590101@IQ:1] 
+            #  .. Answer("PJSIP/2919813-00000000", "") in new stack
+            extension, idx = delimited(line, b'[', b'@', idx + 11)
             app, idx = delimited(line, b'] ', b'(', idx)
             chan, idx = delimited(line, b'("', b'"', idx)
             channel = self.link_chan(line_no, line, chan, acall, when)
@@ -974,9 +975,11 @@ class LogParser(object):
         # -- Nobody picked up
         # Ignore because it is fired multiple times, once for each "ringing"
 
-        # -- SIP/440-0015bbf6 is ringing
+        # [Apr  9 14:06:50] VERBOSE[1590451][C-00000001] 
+        # ... app_queue.c: 
+        # ... PJSIP/2919810-00000001 is ringing
         if line.endswith(b'is ringing'):
-            chan, idx = delimited(line, b'-- ', b' ', pos)
+            chan, idx = delimited(line, b' ', b' is', pos)
             queue.ringing(line_no, when, chan)
             return
 
@@ -988,11 +991,13 @@ class LogParser(object):
             queue.position(line_no, when, chan, position)
             return
 
-        # -- SIP/320-0015a answered SIP/tk-0015b
+        # [Apr  9 14:06:53] VERBOSE[1590451][C-00000001] 
+        # ... app_queue.c: 
+        # ... PJSIP/2919810-00000001 answered PJSIP/2919813-00000000
         idx = line.find(b'answered', pos)
         if idx > 0:
             chan1 = line[idx + 9:]
-            ans_by_chan, idx = delimited(line, b'-- ', b' ', pos)
+            ans_by_chan, idx = delimited(line, b' ', b' ans', pos)
             # Handle pickup (complicated!)
             if ans_by_chan in self.pickup_chans:
                 pick_line_no, pick_line, pick_when, pick_chan = \
