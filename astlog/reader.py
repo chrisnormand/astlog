@@ -4,6 +4,7 @@ import os
 import re
 import logging
 import csv
+import psutil
 from datetime import datetime, timedelta
 
 
@@ -1446,12 +1447,8 @@ def channel_phone(channel_name):
 
 
 def get_memory_size():
-    with open('/proc/meminfo') as f:
-        meminfo = f.read()
-    m = re.search(r'^MemTotal:\s+(\d+)', meminfo)
-    if m:
-        mem_total_kb = int(m.groups()[0])
-        return mem_total_kb * 1024
+    mem = psutil.virtual_memory()
+    return mem.total  # La taille de la mémoire est renvoyée en octets (bytes)
 
 
 if __name__ == '__main__':
